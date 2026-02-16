@@ -23,6 +23,16 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(contenido.encode("utf-8"))
 
+def get_response(self):
+    ruta = self.url().path
+    query = self.query_data()
+
+    if ruta == "/proyecto/web-uno":
+        autor = query.get("autor", "Gerardo")
+        return f"<h1>Proyecto: web-uno Autor: {autor}</h1>"
+
+    return "Hola, sigo configurando el servidor..."
+
 if __name__ == "__main__":
     puerto = 8000
     print(f"Servidor iniciado y escuchando en el puerto {puerto}...") 
