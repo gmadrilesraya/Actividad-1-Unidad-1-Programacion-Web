@@ -23,19 +23,25 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(contenido.encode("utf-8"))
 
-def get_response(self):
-    ruta = self.url().path
-    query = self.query_data()
+    # ¡OJO AQUÍ! Asegúrate de que esta línea tenga 4 espacios de sangría
+    def get_response(self):
+        ruta = self.url().path
+        query = self.query_data()
 
-    if ruta == "/":
-        with open("home.html", "r", encoding="utf-8") as f:
-            return f.read()
+        if ruta == "/":
+            try:
+                # El README pide servir home.html en la ruta "/"
+                with open("home.html", "r", encoding="utf-8") as f:
+                    return f.read()
+            except FileNotFoundError:
+                return "<h1>Error: home.html no encontrado</h1>"
 
-    elif ruta == "/proyecto/web-uno":
-        autor = query.get("autor", "Gerardo")
-        return f"<h1>Proyecto: web-uno Autor: {autor}</h1>"
+        elif ruta == "/proyecto/web-uno":
+            # El README pide mostrar el autor si se solicita esta ruta
+            autor = query.get("autor", "Gerardo")
+            return f"<h1>Proyecto: web-uno Autor: {autor}</h1>"
 
-    return "Página no encontrada"
+        return None
 
 if __name__ == "__main__":
     puerto = 8000
