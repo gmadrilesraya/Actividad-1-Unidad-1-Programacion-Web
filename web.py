@@ -27,11 +27,15 @@ def get_response(self):
     ruta = self.url().path
     query = self.query_data()
 
-    if ruta == "/proyecto/web-uno":
+    if ruta == "/":
+        with open("home.html", "r", encoding="utf-8") as f:
+            return f.read()
+
+    elif ruta == "/proyecto/web-uno":
         autor = query.get("autor", "Gerardo")
         return f"<h1>Proyecto: web-uno Autor: {autor}</h1>"
 
-    return "Hola, sigo configurando el servidor..."
+    return "Página no encontrada"
 
 if __name__ == "__main__":
     puerto = 8000
