@@ -1,5 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qsl, urlparse
+from rutas import rutas_del_sitio
+import os
 
 class WebRequestHandler(BaseHTTPRequestHandler):
     def url(self):
@@ -9,7 +11,6 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return dict(parse_qsl(self.url().query))
 
     def do_GET(self):
-        # Esta línea causaba el error si get_response no estaba bien definida abajo
         contenido = self.get_response()
         
         if contenido is None:
@@ -23,23 +24,25 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(contenido.encode("utf-8"))
 
-    # ¡OJO AQUÍ! Asegúrate de que esta línea tenga 4 espacios de sangría
     def get_response(self):
         ruta = self.url().path
         query = self.query_data()
 
-        if ruta == "/":
-            try:
-                # El README pide servir home.html en la ruta "/"
-                with open("home.html", "r", encoding="utf-8") as f:
-                    return f.read()
-            except FileNotFoundError:
-                return "<h1>Error: home.html no encontrado</h1>"
+        if ruta in rutas_del_sitio:
+            valor = rutas_del_sitio[ruta]
 
-        elif ruta == "/proyecto/web-uno":
-            # El README pide mostrar el autor si se solicita esta ruta
-            autor = query.get("autor", "Gerardo")
-            return f"<h1>Proyecto: web-uno Autor: {autor}</h1>"
+            if isinstance(valor, str) and valor.endswith(".html"):
+                if os.path.exists(valor):
+                    with open(valor, "r", encoding="utf-8") as f:
+                        return f.read()
+                else:
+                    return f"<h1>Error: El archivo '{valor}' no se encuentra en la carpeta</h1>"
+
+            if "{autor}" in valor:
+                autor = query.get("autor", "Gerardo")
+                return valor.format(autor=autor)
+
+            return valor
 
         return None
 
